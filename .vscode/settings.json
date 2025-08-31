@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "lynxlevin"
+    ],
+    "rust-analyzer.linkedProjects": [
+        "./src/trash_reminder/Cargo.toml"
     ]
 }

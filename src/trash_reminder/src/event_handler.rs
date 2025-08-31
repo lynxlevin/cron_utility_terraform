@@ -1,12 +1,12 @@
-use lambda_runtime::{tracing, Error, LambdaEvent};
 use aws_lambda_events::event::cloudwatch_events::CloudWatchEvent;
+use lambda_runtime::{tracing, Error, LambdaEvent};
 
 /// This is the main body for the function.
 /// Write your code inside it.
 /// There are some code example in the following URLs:
 /// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
 /// - https://github.com/aws-samples/serverless-rust-demo/
-pub(crate)async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Result<(), Error> {
+pub(crate) async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Result<(), Error> {
     // Extract some useful information from the request
     let payload = event.payload;
     tracing::info!("Payload: {:?}", payload);
@@ -17,11 +17,25 @@ pub(crate)async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Resu
 #[cfg(test)]
 mod tests {
     use super::*;
+    use chrono::Utc;
     use lambda_runtime::{Context, LambdaEvent};
 
     #[tokio::test]
     async fn test_event_handler() {
-        let event = LambdaEvent::new(CloudWatchEvent::default(), Context::default());
+        let event = LambdaEvent::new(
+            CloudWatchEvent {
+                version: None,
+                id: None,
+                detail_type: None,
+                source: None,
+                account_id: None,
+                time: Utc::now(),
+                region: None,
+                resources: vec![],
+                detail: None,
+            },
+            Context::default(),
+        );
         let response = function_handler(event).await.unwrap();
         assert_eq!((), response);
     }
