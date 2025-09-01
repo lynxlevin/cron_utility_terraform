@@ -2,7 +2,6 @@ use lambda_runtime::{run, service_fn, tracing, Error};
 
 mod event_handler;
 mod trash_schedule;
-mod trash;
 use event_handler::function_handler;
 
 
