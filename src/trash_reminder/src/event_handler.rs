@@ -1,16 +1,35 @@
 use aws_lambda_events::event::cloudwatch_events::CloudWatchEvent;
+use chrono::FixedOffset;
 use lambda_runtime::{tracing, Error, LambdaEvent};
 
-/// This is the main body for the function.
-/// Write your code inside it.
-/// There are some code example in the following URLs:
-/// - https://github.com/awslabs/aws-lambda-rust-runtime/tree/main/examples
-/// - https://github.com/aws-samples/serverless-rust-demo/
-pub(crate) async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Result<(), Error> {
-    // Extract some useful information from the request
-    let payload = event.payload;
-    tracing::info!("Payload: {:?}", payload);
+use crate::{slack_messenger::SlackMessenger, trash_schedule::get_trash_schedule};
 
+const JST_OFFSET: i32 = 9;
+
+pub(crate) async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Result<(), Error> {
+    let utc_time = event.payload.time;
+    let jst_now = utc_time
+        .with_timezone(&FixedOffset::east_opt(JST_OFFSET * 3600).unwrap());
+    let today = utc_time
+        .with_timezone(&FixedOffset::east_opt(JST_OFFSET * 3600).unwrap())
+        .date_naive();
+
+    tracing::info!("utc: {:?}", utc_time);
+    tracing::info!("jst: {:?}", jst_now);
+
+    let trash = get_trash_schedule(today);
+    let message = format!("{}の日です。", trash.to_string());
+    // let result = SlackMessenger::new().await.send_message(message).await;
+
+    // match result {
+    //     Ok(_) => Ok(()),
+    //     Err(e) => {
+    //         tracing::error!("{:?}", e);
+    //         Err(e.into())
+    //     }
+    // }
+
+    tracing::info!(message);
     Ok(())
 }
 

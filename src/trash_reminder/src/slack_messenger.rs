@@ -5,14 +5,14 @@ use std::{collections::HashMap, time::Duration};
 
 const SLACK_API_URL: &str = "https://slack.com/api/chat.postMessage";
 
-struct SlackMessenger {
+pub struct SlackMessenger {
     config: aws_config::SdkConfig,
     ssm_client: aws_sdk_ssm::Client,
     ssm_parameter_arn: String,
 }
 
 impl SlackMessenger {
-    async fn new() -> Self {
+    pub async fn new() -> Self {
         let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
         let ssm_client = aws_sdk_ssm::Client::new(&config);
         Self {
@@ -23,7 +23,7 @@ impl SlackMessenger {
         }
     }
 
-    async fn send_message(&self, text: String) -> Result<(), String> {
+    pub async fn send_message(&self, text: String) -> Result<(), String> {
         // MYMEMO: change key.
         let channel = self
         .get_ssm_parameter(format!("{}/Channel", self.ssm_parameter_arn))

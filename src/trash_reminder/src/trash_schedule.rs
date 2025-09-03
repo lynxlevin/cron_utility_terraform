@@ -2,7 +2,7 @@ use chrono::{Datelike, NaiveDate, Weekday};
 use std::fmt::Display;
 
 #[derive(PartialEq, Debug)]
-enum Trash {
+pub enum Trash {
     Combustibles,
     Plastics,
     PaperAndCloth,
@@ -26,7 +26,7 @@ impl Display for Trash {
     }
 }
 
-fn get_trash_schedule(date: NaiveDate) -> Trash {
+pub fn get_trash_schedule(date: NaiveDate) -> Trash {
     let weekday = date.weekday();
     let week_number = date.day().div_ceil(7);
 
