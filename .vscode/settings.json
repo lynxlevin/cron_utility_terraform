@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "chrono",
-        "lynxlevin"
+        "eventbridge",
+        "lynxlevin",
+        "rustls"
     ],
     "rust-analyzer.linkedProjects": [
         "./src/trash_reminder/Cargo.toml"
