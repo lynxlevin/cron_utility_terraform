@@ -55,7 +55,6 @@ module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
 
   function_name = "trash-reminder"
-  description   = "My awesome lambda function"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
 
