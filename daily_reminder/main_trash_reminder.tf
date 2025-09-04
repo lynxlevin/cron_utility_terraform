@@ -34,6 +34,8 @@ module "event_bridge" {
 
   create_bus = false
 
+  role_name = "trash_reminder_eventbridge_role"
+
   rules = {
     trash_reminder = {
       state = "ENABLED"
