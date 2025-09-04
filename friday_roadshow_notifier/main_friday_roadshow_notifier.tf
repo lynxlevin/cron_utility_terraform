@@ -34,10 +34,12 @@ module "event_bridge" {
 
   create_bus = false
 
+  role_name = "friday_roadshow_notifier_eventbridge_role"
+
   rules = {
     friday_roadshow_notifier = {
       state = "ENABLED"
-      schedule_expression = "cron(30 03 * ? 3 *)"
+      schedule_expression = "cron(30 03 ? * 4 *)"
     }
   }
 
