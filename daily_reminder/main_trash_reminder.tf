@@ -36,8 +36,7 @@ module "event_bridge" {
 
   rules = {
     trash_reminder = {
-      # state = "ENABLED"
-      state = "DISABLED"
+      state = "ENABLED"
       schedule_expression = "cron(30 21 * * ? *)"
     }
   }

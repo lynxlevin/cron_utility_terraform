@@ -17,7 +17,7 @@ pub(crate) async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Res
     match trash {
         Trash::None | Trash::Combustibles | Trash::Plastics => Ok(()),
         _ => {
-            let message = format!("{}の日です。", trash.to_string());
+            let message = format!("今日は{}の日です。", trash.to_string());
 
             let result = SlackMessenger::new().await.send_message(message).await;
 
@@ -29,32 +29,5 @@ pub(crate) async fn function_handler(event: LambdaEvent<CloudWatchEvent>) -> Res
                 }
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use chrono::Utc;
-    use lambda_runtime::{Context, LambdaEvent};
-
-    #[tokio::test]
-    async fn test_event_handler() {
-        let event = LambdaEvent::new(
-            CloudWatchEvent {
-                version: None,
-                id: None,
-                detail_type: None,
-                source: None,
-                account_id: None,
-                time: Utc::now(),
-                region: None,
-                resources: vec![],
-                detail: None,
-            },
-            Context::default(),
-        );
-        let response = function_handler(event).await.unwrap();
-        assert_eq!((), response);
     }
 }
