@@ -756,6 +756,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "friday_roadshow_notifier"
+version = "0.1.0"
+dependencies = [
+ "aws-config",
+ "aws-sdk-ssm",
+ "aws_lambda_events",
+ "chrono",
+ "lambda_runtime",
+ "reqwest",
+ "tokio",
+]
+
+[[package]]
 name = "fs_extra"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2468,19 +2481,6 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-serde",
-]
-
-[[package]]
-name = "trash_reminder"
-version = "0.1.0"
-dependencies = [
- "aws-config",
- "aws-sdk-ssm",
- "aws_lambda_events",
- "chrono",
- "lambda_runtime",
- "reqwest",
- "tokio",
 ]
 
 [[package]]

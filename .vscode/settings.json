@@ -6,6 +6,7 @@
         "rustls"
     ],
     "rust-analyzer.linkedProjects": [
-        "./src/trash_reminder/Cargo.toml"
+        "./src/trash_reminder/Cargo.toml",
+        "./src/friday_roadshow_notifier/Cargo.toml"
     ]
 }

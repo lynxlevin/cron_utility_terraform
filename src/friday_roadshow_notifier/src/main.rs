@@ -1,7 +1,6 @@
 use lambda_runtime::{run, service_fn, tracing, Error};
 
 mod event_handler;
-mod trash_schedule;
 mod slack_messenger;
 use event_handler::function_handler;
 
