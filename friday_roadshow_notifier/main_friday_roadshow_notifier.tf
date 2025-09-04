@@ -1,17 +1,17 @@
 locals {
-  slack_channel_id_name = "trash_reminder_slack_channel_id"
-  slack_token_name      = "trash_reminder_slack_token"
+  slack_channel_id_name = "friday_roadshow_notifier_slack_channel_id"
+  slack_token_name      = "friday_roadshow_notifier_slack_token"
   parameters = {
     "${local.slack_channel_id_name}" = {
       type                 = "SecureString"
       value                = "dummy_value"
-      description          = "Format: 11-digit code starting with C. For trash_reminder."
+      description          = "Format: 11-digit code starting with C. For friday_roadshow_notifier."
       ignore_value_changes = true
     }
     "${local.slack_token_name}" = {
       type                 = "SecureString"
       value                = "dummy_value"
-      description          = "Format: ([a-z]*4)-([0-9]*13)-([0-9]*13)-([a-zA-Z0-9]*24)`). For bot access for trash_reminder."
+      description          = "Format: ([a-z]*4)-([0-9]*13)-([0-9]*13)-([a-zA-Z0-9]*24)`). For bot access for friday_roadshow_notifier."
       ignore_value_changes = true
     }
   }
@@ -34,19 +34,19 @@ module "event_bridge" {
 
   create_bus = false
 
-  role_name = "trash_reminder_eventbridge_role"
+  role_name = "friday_roadshow_notifier_eventbridge_role"
 
   rules = {
-    trash_reminder = {
+    friday_roadshow_notifier = {
       state = "ENABLED"
-      schedule_expression = "cron(30 21 * * ? *)"
+      schedule_expression = "cron(30 03 ? * 4 *)"
     }
   }
 
   targets = {
-    trash_reminder = [
+    friday_roadshow_notifier = [
       {
-        name = "trash-reminder-lambda"
+        name = "friday-roadshow-notifier-lambda"
         arn  = module.lambda_function.lambda_function_arn
       }
     ]
@@ -56,7 +56,7 @@ module "event_bridge" {
 module "lambda_function" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name = "trash-reminder"
+  function_name = "friday-roadshow-notifier"
   handler       = "bootstrap"
   runtime       = "provided.al2023"
 
@@ -73,10 +73,10 @@ module "lambda_function" {
 
   source_path = [
     {
-      path = "${path.module}/../src/trash_reminder"
+      path = "${path.module}/../src/friday_roadshow_notifier"
       commands = [
         "cargo lambda build --release",
-        "cd target/lambda/trash_reminder",
+        "cd target/lambda/friday_roadshow_notifier",
         ":zip",
       ]
       patterns = [
@@ -89,7 +89,7 @@ module "lambda_function" {
   allowed_triggers = {
     DailyReminder = {
       principal  = "events.amazonaws.com"
-      source_arn = module.event_bridge.eventbridge_rule_arns["trash_reminder"]
+      source_arn = module.event_bridge.eventbridge_rule_arns["friday_roadshow_notifier"]
     }
   }
 
