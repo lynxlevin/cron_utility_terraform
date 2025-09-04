@@ -31,27 +31,21 @@ pub fn get_trash_schedule(date: NaiveDate) -> Trash {
     let week_number = date.day().div_ceil(7);
 
     match weekday {
-        Weekday::Sun => {
-            match week_number {
-                1 | 3 => Trash::PaperAndCloth,
-                _ => Trash::None
-            }
+        Weekday::Sun => match week_number {
+            1 | 3 => Trash::PaperAndCloth,
+            _ => Trash::None,
         },
         Weekday::Mon => Trash::Combustibles,
-        Weekday::Tue => {
-            match week_number {
-                1 | 3 => Trash::PaperAndCloth,
-                2 | 4 => Trash::PlasticBottles,
-                _ => Trash::None
-            }
-        }
-        Weekday::Wed => {
-            match week_number {
-                1 | 3 => Trash::CansAndBottles,
-                2 | 4 => Trash::InCombustibles,
-                _ => Trash::None
-            }
-        }
+        Weekday::Tue => match week_number {
+            1 | 3 => Trash::PaperAndCloth,
+            2 | 4 => Trash::PlasticBottles,
+            _ => Trash::None,
+        },
+        Weekday::Wed => match week_number {
+            1 | 3 => Trash::CansAndBottles,
+            2 | 4 => Trash::InCombustibles,
+            _ => Trash::None,
+        },
         Weekday::Thu => Trash::Combustibles,
         Weekday::Fri => Trash::Plastics,
         Weekday::Sat => Trash::None,
@@ -60,8 +54,6 @@ pub fn get_trash_schedule(date: NaiveDate) -> Trash {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-
     use super::*;
 
     #[tokio::test]

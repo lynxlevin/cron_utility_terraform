@@ -1,14 +1,12 @@
 use aws_config::BehaviorVersion;
 use lambda_runtime::tracing;
 use reqwest::Client;
-use std::{collections::HashMap, time::Duration};
+use std::{collections::HashMap, time::Duration, env};
 
 const SLACK_API_URL: &str = "https://slack.com/api/chat.postMessage";
 
 pub struct SlackMessenger {
-    config: aws_config::SdkConfig,
     ssm_client: aws_sdk_ssm::Client,
-    ssm_parameter_arn: String,
 }
 
 impl SlackMessenger {
@@ -16,25 +14,23 @@ impl SlackMessenger {
         let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
         let ssm_client = aws_sdk_ssm::Client::new(&config);
         Self {
-            config,
             ssm_client,
-            // MYMEMO: get arn from env
-            ssm_parameter_arn: "Some name from env".to_string(),
         }
     }
 
     pub async fn send_message(&self, text: String) -> Result<(), String> {
-        // MYMEMO: change key.
-        let channel = self
-        .get_ssm_parameter(format!("{}/Channel", self.ssm_parameter_arn))
-        .await?;
-        // MYMEMO: change key.
+        let channel_id_ssm_arn = env::var("SSMSlackChannelIdArn").unwrap();
+        let channel_id = self
+            ._get_ssm_parameter(channel_id_ssm_arn)
+            .await?;
+
+        let token_ssm_arn = env::var("SSMSlackTokenArn").unwrap();
         let token = self
-            .get_ssm_parameter(format!("{}/Token", self.ssm_parameter_arn))
+            ._get_ssm_parameter(token_ssm_arn)
             .await?;
 
         let mut body = HashMap::new();
-        body.insert("channel", channel);
+        body.insert("channel", channel_id);
         body.insert("text", text);
 
         let client = Client::new();
@@ -46,6 +42,7 @@ impl SlackMessenger {
             .timeout(Duration::from_secs(30))
             .send()
             .await;
+
         match res {
             Ok(_) => Ok(()),
             Err(e) => {
@@ -55,17 +52,18 @@ impl SlackMessenger {
         }
     }
 
-    async fn get_ssm_parameter(& self, key: String) -> Result<String, String> {
+    async fn _get_ssm_parameter(&self, arn: String) -> Result<String, String> {
         let res = match self
             .ssm_client
             .get_parameter()
-            .name(self.ssm_parameter_arn.clone())
+            .name(&arn)
+            .with_decryption(true)
             .send()
             .await
         {
             Ok(res) => res,
             Err(e) => {
-                tracing::error!("Error on get_ssm_parameter, key: {}, error: {:?}", key, e);
+                tracing::error!("Error on get_ssm_parameter, arn: {}, error: {:?}", arn, e);
                 return Err("Some Error on get_ssm_parameter".to_string());
             }
         };
@@ -74,12 +72,12 @@ impl SlackMessenger {
             Some(param) => match param.value() {
                 Some(value) => Ok(value.to_string()),
                 None => {
-                    tracing::error!("Empty value, key: {}", key);
+                    tracing::error!("Empty value, arn: {}", arn);
                     return Err("Some empty value".to_string());
                 }
             },
             None => {
-                tracing::error!("Empty value, key: {}", key);
+                tracing::error!("Empty value, arn: {}", arn);
                 return Err("Some empty value".to_string());
             }
         }
