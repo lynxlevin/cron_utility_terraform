@@ -1,0 +1,14 @@
+[package]
+name = "friday_roadshow_notifier"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aws-config = "1.8.6"
+aws-sdk-ssm = "1.92.0"
+aws_lambda_events = { version = "0.15.1", default-features = false, features = ["cloudwatch_events"] }
+chrono = "0.4.41"
+
+lambda_runtime = "0.13.0"
+reqwest = {version = "0.12.23", default-features = false, features = ["json", "rustls-tls"]}
+tokio = { version = "1", features = ["macros"] }
